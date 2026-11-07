@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>စက်သုံးဆီ ဈေးနှုန်းများ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Pyidaungsu', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid #475569;
+        }
+
+        .header h1 {
+            color: #f59e0b;
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .price-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .price-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #1e293b;
+            padding: 18px 25px;
+            border-radius: 10px;
+            border-left: 8px solid #cbd5e1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .price-card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ဆီအမျိုးအစားအလိုက် အရောင်ခွဲခြားခြင်း */
+        .octane-92 { border-left-color: #ef4444; } /* အနီရောင် */
+        .octane-95 { border-left-color: #eab308; } /* အဝါရောင် */
+        .diesel { border-left-color: #3b82f6; }    /* အပြာရောင် */
+        .premium-diesel { border-left-color: #10b981; } /* အစိမ်းရောင် */
+
+        .fuel-name {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .fuel-badge {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+        }
+
+        .octane-92 .fuel-badge { background-color: #ef4444; }
+        .octane-95 .fuel-badge { background-color: #eab308; }
+        .diesel .fuel-badge { background-color: #3b82f6; }
+        .premium-diesel .fuel-badge { background-color: #10b981; }
+
+        .fuel-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .price-val {
+            font-size: 1.8rem;
+            font-weight: bold;
+            font-family: monospace, sans-serif;
+            color: #38bdf8;
+        }
+
+        .unit {
+            font-size: 1rem;
+            color: #94a3b8;
+            margin-left: 5px;
+        }
+
+        .footer-note {
+            margin-top: 25px;
+            color: #64748b;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>ယနေ့ဆီဈေးနှုန်းများ</h1>
+        <p>နေ့စွဲ - <span id="current-date"></span></p>
+    </div>
+
+    <div class="price-container">
+        <!-- Octane 92 -->
+        <div class="price-card octane-92">
+            <div class="fuel-name">
+                <div class="fuel-badge"></div>
+                <div class="fuel-title">Octane 92 Ron</div>
+            </div>
+            <div>
+                <span class="price-val">၅၁၉၅</span>
+                <span class="unit">ကျပ် / လီတာ</span>
+            </div>
+        </div>
+
+        <!-- Octane 95 -->
+        <div class="price-card octane-95">
+            <div class="fuel-name">
+                <div class="fuel-badge"></div>
+                <div class="fuel-title">Octane 95 Ron</div>
+            </div>
+            <div>
+                <span class="price-val">၅၃၅၀</span>
+                <span class="unit">ကျပ် / လီတာ</span>
+            </div>
+        </div>
+
+        <!-- Diesel -->
+        <div class="price-card diesel">
+            <div class="fuel-name">
+                <div class="fuel-badge"></div>
+                <div class="fuel-title">Diesel (ဒီဇယ်)</div>
+            </div>
+            <div>
+                <span class="price-val">၅၀၉၀</span>
+                <span class="unit">ကျပ် / လီတာ</span>
+            </div>
+        </div>
+
+        <!-- Premium Diesel -->
+        <div class="price-card premium-diesel">
+            <div class="fuel-name">
+                <div class="fuel-badge"></div>
+                <div class="fuel-title">Premium Diesel (ပရီမီယံ ဒီဇယ်)</div>
+            </div>
+            <div>
+                <span class="price-val">၆၀၂၀</span>
+                <span class="unit">ကျပ် / လီတာ</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        * ဈေးနှုန်းများသည် အချိန်နှင့်အမျှ ပြောင်းလဲမှုရှိနိုင်ပါသည်။
+    </div>
+
+    <script>
+        // လက်ရှိနေ့စွဲကို ဖော်ပြပေးသည့် JavaScript
+        const today = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').textContent = today.toLocaleDateString('my-MM', options);
+    </script>
+
+</body>
+</html>
