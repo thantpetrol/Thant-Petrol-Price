@@ -2,8 +2,8 @@
 <html lang="my">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>စက်သုံးဆီ ဈေးနှုန်းများ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> သန့်စက်သုံးဆီအရောင်းဆိုင် </title>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -14,33 +14,50 @@
             font-family: 'Pyidaungsu', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        body {
+        /* Full Screen Layout without scrolling */
+        html, body {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height for mobile browsers */
+            overflow: hidden;
             background-color: #0b0f19;
             color: #ffffff;
-            min-height: 100vh;
+        }
+
+        body {
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            padding: 30px 20px;
+            padding: clamp(10px, 2.5vh, 20px);
+        }
+
+        /* Main Wrapper */
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: clamp(8px, 1.5vh, 16px);
         }
 
         /* Logo & Header Section with Custom GIF Background */
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 30px 40px;
+            padding: clamp(12px, 2.2vh, 22px) 15px;
             /* Background GIF Setup */
-            background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), 
+            background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), 
                         url('https://i.pinimg.com/originals/bd/7d/b0/bd7db0d8cece2fb49a719d606bf70be0.gif');
             background-size: cover;
             background-position: center;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(245, 158, 11, 0.2);
-            width: 100%;
-            max-width: 850px;
+            border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 0 12px rgba(245, 158, 11, 0.25);
             border: 1px solid #334155;
             position: relative;
             overflow: hidden;
+            flex-shrink: 0;
         }
 
         /* Glowing Animated Border Top */
@@ -61,39 +78,46 @@
         }
 
         .brand-logo {
-            font-size: 3rem;
+            font-size: clamp(1.8rem, 4vh, 2.8rem);
             color: #f59e0b;
-            margin-bottom: 10px;
+            margin-bottom: 2px;
             display: inline-block;
             animation: pulse-glow 2s infinite ease-in-out;
+            line-height: 1;
         }
 
         @keyframes pulse-glow {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6)); }
-            50% { transform: scale(1.08); filter: drop-shadow(0 0 18px rgba(245, 158, 11, 0.9)); }
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.6)); }
+            50% { transform: scale(1.06); filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.9)); }
         }
 
         .header h1 {
             color: #ffffff;
-            font-size: 2.2rem;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+            font-size: clamp(1.2rem, 3vh, 1.8rem);
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+            font-weight: 700;
         }
 
         .header p {
             color: #cbd5e1;
-            font-size: 1rem;
-            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.7);
+            font-size: clamp(0.75rem, 1.8vh, 0.95rem);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
         /* Price Board Container */
         .price-container {
             width: 100%;
-            max-width: 850px;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: clamp(8px, 1.4vh, 14px);
+            flex-grow: 1;
+            justify-content: space-evenly;
         }
 
         .price-card {
@@ -101,54 +125,56 @@
             justify-content: space-between;
             align-items: center;
             background-color: #161e2e;
-            padding: 20px 30px;
-            border-radius: 14px;
-            border-left: 8px solid #cbd5e1;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 0 clamp(12px, 3vw, 20px);
+            border-radius: 12px;
+            border-left: 6px solid #cbd5e1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             position: relative;
+            flex-grow: 1;
+            max-height: 22vh;
         }
 
         .price-card:hover {
-            transform: translateX(8px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            transform: translateX(4px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
         }
 
         /* Color Coding & Glowing Border */
         .octane-92 { border-left-color: #ef4444; }
-        .octane-92:hover { box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); }
+        .octane-92:hover { box-shadow: 0 0 12px rgba(239, 68, 68, 0.3); }
 
         .octane-95 { border-left-color: #eab308; }
-        .octane-95:hover { box-shadow: 0 0 15px rgba(234, 179, 8, 0.3); }
+        .octane-95:hover { box-shadow: 0 0 12px rgba(234, 179, 8, 0.3); }
 
         .diesel { border-left-color: #3b82f6; }
-        .diesel:hover { box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+        .diesel:hover { box-shadow: 0 0 12px rgba(59, 130, 246, 0.3); }
 
         .premium-diesel { border-left-color: #10b981; }
-        .premium-diesel:hover { box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+        .premium-diesel:hover { box-shadow: 0 0 12px rgba(16, 185, 129, 0.3); }
 
         /* Fuel Info Section */
         .fuel-info {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: clamp(8px, 2vw, 14px);
+            min-width: 0; /* Prevents flex items from overflowing container */
+            flex: 1 1 auto;
         }
 
-        /* Icon Box - Fixed Same Size & Standardized Icon Size */
+        /* Icon Box - Standardized responsive sizing */
         .fuel-icon-box {
-            width: 52px;
-            height: 52px;
-            min-width: 52px;
-            min-height: 52px;
-            border-radius: 12px;
+            width: clamp(34px, 4.8vh, 44px);
+            height: clamp(34px, 4.8vh, 44px);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
+            flex-shrink: 0;
         }
 
         .fuel-icon-box i {
-            font-size: 1.4rem;
+            font-size: clamp(1rem, 2.2vh, 1.3rem);
             line-height: 1;
         }
 
@@ -158,40 +184,46 @@
         .premium-diesel .fuel-icon-box { background: rgba(16, 185, 129, 0.15); color: #10b981; }
 
         .fuel-title {
-            font-size: 1.35rem;
+            font-size: clamp(0.8rem, 1.9vh, 1.1rem);
             font-weight: 600;
+            line-height: 1.25;
+            word-break: break-word;
         }
 
         /* Digital Price Display */
         .price-box {
             display: flex;
             align-items: baseline;
-            gap: 8px;
+            gap: clamp(2px, 0.8vw, 5px);
+            flex-shrink: 0;
+            margin-left: 6px;
         }
 
         .price-val {
-            font-size: 2.2rem;
+            font-size: clamp(1.2rem, 3vh, 1.9rem);
             font-weight: 700;
             font-family: 'Courier New', Courier, monospace;
             color: #38bdf8;
-            text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+            letter-spacing: -0.5px;
         }
 
         .unit {
-            font-size: 0.95rem;
+            font-size: clamp(0.65rem, 1.3vh, 0.8rem);
             color: #94a3b8;
+            white-space: nowrap;
         }
 
         /* Status Dot Animation */
         .status-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             display: inline-block;
-            margin-right: 6px;
             background-color: #10b981;
-            box-shadow: 0 0 8px #10b981;
+            box-shadow: 0 0 6px #10b981;
             animation: blink 1.5s infinite;
+            flex-shrink: 0;
         }
 
         @keyframes blink {
@@ -200,87 +232,91 @@
         }
 
         .footer-note {
-            margin-top: 30px;
             color: #64748b;
-            font-size: 0.9rem;
+            font-size: clamp(0.7rem, 1.5vh, 0.8rem);
             text-align: center;
+            flex-shrink: 0;
+            padding-top: 2px;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <!-- Animated Fuel Pump Logo -->
-        <div class="brand-logo">
-            <i class="fa-solid fa-gas-pump"></i>
+    <div class="app-container">
+        <!-- Animated Fuel Pump Logo Header -->
+        <div class="header">
+            <div class="brand-logo">
+                <i class="fa-solid fa-gas-pump"></i>
+            </div>
+            <h1>THANT Today Fuel Price</h1>
+            <p><span class="status-dot"></span> ယနေ့ နေ့စွဲ - <span id="current-date"></span></p>
         </div>
-        <h1>သန့်စက်သုံးဆီဆိုင်မှ ယဈေးနှုန်းများ</h1>
-        <p><span class="status-dot"></span> ယနေ့ နေ့စွဲ - <span id="current-date"></span></p>
-    </div>
 
-    <div class="price-container">
-        <!-- Octane 92 -->
-        <div class="price-card octane-92">
-            <div class="fuel-info">
-                <div class="fuel-icon-box">
-                    <i class="fa-solid fa-gas-pump"></i>
+        <div class="price-container">
+            <!-- Octane 92 -->
+            <div class="price-card octane-92">
+                <div class="fuel-info">
+                    <div class="fuel-icon-box">
+                        <i class="fa-solid fa-gas-pump"></i>
+                    </div>
+                    <div class="fuel-title">Octane 92 Ron</div>
                 </div>
-                <div class="fuel-title">Octane 92 Ron</div>
-            </div>
-            <div class="price-box">
-                <span class="price-val">5195</span>
-                <span class="unit">ကျပ် / လီတာ</span>
-            </div>
-        </div>
-
-        <!-- Octane 95 -->
-        <div class="price-card octane-95">
-            <div class="fuel-info">
-                <div class="fuel-icon-box">
-                    <i class="fa-solid fa-gas-pump"></i>
+                <div class="price-box">
+                    <span class="price-val">5195</span>
+                    <span class="unit">ကျပ် / လီတာ</span>
                 </div>
-                <div class="fuel-title">Octane 95 Ron</div>
             </div>
-            <div class="price-box">
-                <span class="price-val">5350</span>
-                <span class="unit">ကျပ် / လီတာ</span>
-            </div>
-        </div>
 
-        <!-- Diesel -->
-        <div class="price-card diesel">
-            <div class="fuel-info">
-                <div class="fuel-icon-box">
-                    <i class="fa-solid fa-gas-pump"></i>
+            <!-- Octane 95 -->
+            <div class="price-card octane-95">
+                <div class="fuel-info">
+                    <div class="fuel-icon-box">
+                        <i class="fa-solid fa-gas-pump"></i>
+                    </div>
+                    <div class="fuel-title">Octane 95 Ron</div>
                 </div>
-                <div class="fuel-title">Diesel (ဒီဇယ်)</div>
-            </div>
-            <div class="price-box">
-                <span class="price-val">5090</span>
-                <span class="unit">ကျပ် / လီတာ</span>
-            </div>
-        </div>
-
-        <!-- Premium Diesel -->
-        <div class="price-card premium-diesel">
-            <div class="fuel-info">
-                <div class="fuel-icon-box">
-                    <i class="fa-solid fa-gas-pump"></i>
+                <div class="price-box">
+                    <span class="price-val">5350</span>
+                    <span class="unit">ကျပ် / လီတာ</span>
                 </div>
-                <div class="fuel-title">Premium Diesel (ပရီမီယံ ဒီဇယ်)</div>
             </div>
-            <div class="price-box">
-                <span class="price-val">6020</span>
-                <span class="unit">ကျပ် / လီတာ</span>
+
+            <!-- Diesel -->
+            <div class="price-card diesel">
+                <div class="fuel-info">
+                    <div class="fuel-icon-box">
+                        <i class="fa-solid fa-gas-pump"></i>
+                    </div>
+                    <div class="fuel-title">Diesel (ဒီဇယ်)</div>
+                </div>
+                <div class="price-box">
+                    <span class="price-val">5090</span>
+                    <span class="unit">ကျပ် / လီတာ</span>
+                </div>
+            </div>
+
+            <!-- Premium Diesel -->
+            <div class="price-card premium-diesel">
+                <div class="fuel-info">
+                    <div class="fuel-icon-box">
+                        <i class="fa-solid fa-gas-pump"></i>
+                    </div>
+                    <div class="fuel-title">Premium Diesel (ပရီမီယံ ဒီဇယ်)</div>
+                </div>
+                <div class="price-box">
+                    <span class="price-val">6020</span>
+                    <span class="unit">ကျပ် / လီတာ</span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="footer-note">
-        * ဈေးနှုန်းများသည် အချိန်နှင့်အမျှ ပြောင်းလဲမှုရှိနိုင်ပါသည်။
+        <div class="footer-note">
+            * ဈေးနှုန်းများသည် အချိန်နှင့်အမျှ ပြောင်းလဲမှုရှိနိုင်ပါသည်။
+        </div>
     </div>
 
     <script>
+        // Update Burmese Date automatically
         const today = new Date();
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('current-date').textContent = today.toLocaleDateString('my-MM', options);
