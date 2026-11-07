@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>စက်သုံးဆီ ဈေးနှုန်းများ</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -13,107 +15,194 @@
         }
 
         body {
-            background-color: #0f172a;
+            background-color: #0b0f19;
             color: #ffffff;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 30px 20px;
         }
 
+        /* Logo & Header Section with Custom GIF Background */
         .header {
             text-align: center;
-            margin-bottom: 25px;
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #1e293b, #334155);
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            padding: 30px 40px;
+            /* Background GIF Setup */
+            background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), 
+                        url('https://i.pinimg.com/originals/bd/7d/b0/bd7db0d8cece2fb49a719d606bf70be0.gif');
+            background-size: cover;
+            background-position: center;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(245, 158, 11, 0.2);
             width: 100%;
-            max-width: 800px;
-            border: 1px solid #475569;
+            max-width: 850px;
+            border: 1px solid #334155;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Glowing Animated Border Top */
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #f59e0b, transparent);
+            animation: loading-bar 3s infinite linear;
+        }
+
+        @keyframes loading-bar {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .brand-logo {
+            font-size: 3rem;
+            color: #f59e0b;
+            margin-bottom: 10px;
+            display: inline-block;
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6)); }
+            50% { transform: scale(1.08); filter: drop-shadow(0 0 18px rgba(245, 158, 11, 0.9)); }
         }
 
         .header h1 {
-            color: #f59e0b;
-            font-size: 2rem;
+            color: #ffffff;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
             margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
         }
 
         .header p {
-            color: #94a3b8;
-            font-size: 0.95rem;
+            color: #cbd5e1;
+            font-size: 1rem;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.7);
         }
 
+        /* Price Board Container */
         .price-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 850px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 18px;
         }
 
         .price-card {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #1e293b;
-            padding: 18px 25px;
-            border-radius: 10px;
+            background-color: #161e2e;
+            padding: 20px 30px;
+            border-radius: 14px;
             border-left: 8px solid #cbd5e1;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         .price-card:hover {
-            transform: translateY(-2px);
+            transform: translateX(8px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
         }
 
-        /* ဆီအမျိုးအစားအလိုက် အရောင်ခွဲခြားခြင်း */
-        .octane-92 { border-left-color: #ef4444; } /* အနီရောင် */
-        .octane-95 { border-left-color: #eab308; } /* အဝါရောင် */
-        .diesel { border-left-color: #3b82f6; }    /* အပြာရောင် */
-        .premium-diesel { border-left-color: #10b981; } /* အစိမ်းရောင် */
+        /* Color Coding & Glowing Border */
+        .octane-92 { border-left-color: #ef4444; }
+        .octane-92:hover { box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); }
 
-        .fuel-name {
+        .octane-95 { border-left-color: #eab308; }
+        .octane-95:hover { box-shadow: 0 0 15px rgba(234, 179, 8, 0.3); }
+
+        .diesel { border-left-color: #3b82f6; }
+        .diesel:hover { box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+
+        .premium-diesel { border-left-color: #10b981; }
+        .premium-diesel:hover { box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+
+        /* Fuel Info Section */
+        .fuel-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
         }
 
-        .fuel-badge {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
+        /* Icon Box - Fixed Same Size & Standardized Icon Size */
+        .fuel-icon-box {
+            width: 52px;
+            height: 52px;
+            min-width: 52px;
+            min-height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
         }
 
-        .octane-92 .fuel-badge { background-color: #ef4444; }
-        .octane-95 .fuel-badge { background-color: #eab308; }
-        .diesel .fuel-badge { background-color: #3b82f6; }
-        .premium-diesel .fuel-badge { background-color: #10b981; }
+        .fuel-icon-box i {
+            font-size: 1.4rem;
+            line-height: 1;
+        }
+
+        .octane-92 .fuel-icon-box { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .octane-95 .fuel-icon-box { background: rgba(234, 179, 8, 0.15); color: #eab308; }
+        .diesel .fuel-icon-box { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .premium-diesel .fuel-icon-box { background: rgba(16, 185, 129, 0.15); color: #10b981; }
 
         .fuel-title {
-            font-size: 1.3rem;
-            font-weight: bold;
+            font-size: 1.35rem;
+            font-weight: 600;
+        }
+
+        /* Digital Price Display */
+        .price-box {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
         }
 
         .price-val {
-            font-size: 1.8rem;
-            font-weight: bold;
-            font-family: monospace, sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            font-family: 'Courier New', Courier, monospace;
             color: #38bdf8;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
         }
 
         .unit {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #94a3b8;
-            margin-left: 5px;
+        }
+
+        /* Status Dot Animation */
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+            background-color: #10b981;
+            box-shadow: 0 0 8px #10b981;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
 
         .footer-note {
-            margin-top: 25px;
+            margin-top: 30px;
             color: #64748b;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             text-align: center;
         }
     </style>
@@ -121,55 +210,67 @@
 <body>
 
     <div class="header">
-        <h1>ယနေ့ဆီဈေးနှုန်းများ</h1>
-        <p>နေ့စွဲ - <span id="current-date"></span></p>
+        <!-- Animated Fuel Pump Logo -->
+        <div class="brand-logo">
+            <i class="fa-solid fa-gas-pump"></i>
+        </div>
+        <h1>သန့်စက်သုံးဆီဆိုင်မှ ယဈေးနှုန်းများ</h1>
+        <p><span class="status-dot"></span> ယနေ့ နေ့စွဲ - <span id="current-date"></span></p>
     </div>
 
     <div class="price-container">
         <!-- Octane 92 -->
         <div class="price-card octane-92">
-            <div class="fuel-name">
-                <div class="fuel-badge"></div>
+            <div class="fuel-info">
+                <div class="fuel-icon-box">
+                    <i class="fa-solid fa-gas-pump"></i>
+                </div>
                 <div class="fuel-title">Octane 92 Ron</div>
             </div>
-            <div>
-                <span class="price-val">၅၁၉၅</span>
+            <div class="price-box">
+                <span class="price-val">5195</span>
                 <span class="unit">ကျပ် / လီတာ</span>
             </div>
         </div>
 
         <!-- Octane 95 -->
         <div class="price-card octane-95">
-            <div class="fuel-name">
-                <div class="fuel-badge"></div>
+            <div class="fuel-info">
+                <div class="fuel-icon-box">
+                    <i class="fa-solid fa-gas-pump"></i>
+                </div>
                 <div class="fuel-title">Octane 95 Ron</div>
             </div>
-            <div>
-                <span class="price-val">၅၃၅၀</span>
+            <div class="price-box">
+                <span class="price-val">5350</span>
                 <span class="unit">ကျပ် / လီတာ</span>
             </div>
         </div>
 
         <!-- Diesel -->
         <div class="price-card diesel">
-            <div class="fuel-name">
-                <div class="fuel-badge"></div>
+            <div class="fuel-info">
+                <div class="fuel-icon-box">
+                    <i class="fa-solid fa-gas-pump"></i>
+                </div>
                 <div class="fuel-title">Diesel (ဒီဇယ်)</div>
             </div>
-            <div>
-                <span class="price-val">၅၀၉၀</span>
+            <div class="price-box">
+                <span class="price-val">5090</span>
                 <span class="unit">ကျပ် / လီတာ</span>
             </div>
         </div>
 
         <!-- Premium Diesel -->
         <div class="price-card premium-diesel">
-            <div class="fuel-name">
-                <div class="fuel-badge"></div>
+            <div class="fuel-info">
+                <div class="fuel-icon-box">
+                    <i class="fa-solid fa-gas-pump"></i>
+                </div>
                 <div class="fuel-title">Premium Diesel (ပရီမီယံ ဒီဇယ်)</div>
             </div>
-            <div>
-                <span class="price-val">၆၀၂၀</span>
+            <div class="price-box">
+                <span class="price-val">6020</span>
                 <span class="unit">ကျပ် / လီတာ</span>
             </div>
         </div>
@@ -180,7 +281,6 @@
     </div>
 
     <script>
-        // လက်ရှိနေ့စွဲကို ဖော်ပြပေးသည့် JavaScript
         const today = new Date();
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('current-date').textContent = today.toLocaleDateString('my-MM', options);
