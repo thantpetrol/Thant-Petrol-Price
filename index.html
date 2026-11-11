@@ -69,7 +69,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <div class="flex justify-between items-center">
                 
-                <!-- LOGO WITH IMAGE (အရွယ်အစား ကြီးထားပါသည်) -->
+                <!-- LOGO WITH IMAGE -->
                 <div class="flex items-center space-x-3">
                     <img src="https://i.postimg.cc/X7qv5CXW/Logopit-1785083590716.png" alt="THANT Petrol Station Logo" class="w-24 h-24 sm:w-28 sm:h-28 object-contain drop-shadow-md">
                     <div>
@@ -97,25 +97,20 @@
     </header>
 
     <main class="flex-grow">
-        <!-- Hero Section / Advertising Section -->
+        <!-- Hero Section -->
         <section id="home" class="relative bg-slate-900 text-white overflow-hidden">
-            <!-- Station Banner Image -->
             <div class="absolute inset-0 z-0 opacity-40">
                 <img src="https://i.postimg.cc/FsyQQ1dC/1777754589083(1).png" alt="Station Banner" class="w-full h-full object-cover">
             </div>
             
             <div class="relative z-10 max-w-7xl mx-auto px-4 py-16 sm:py-24 lg:py-32 flex flex-col items-center text-center">
                 <span class="inline-block px-4 py-1.5 bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded-full text-sm font-semibold mb-4">
-                    ✨ ​မှန်ကန်သည့်အချိန်အတွယ်၊
-                    ပြည့်ဝသည့်အရည်အသွေး၊
+                    ✨ ​မှန်ကန်သည့်အချိန်အတွယ်၊ ပြည့်ဝသည့်အရည်အသွေး၊
                 </span>
                 <h2 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 max-w-4xl leading-tight">
                     Ready For <span class="text-white-400"> The </span> Road Ahead
                 </h2>
                 
-                <p class="text-gray-300 text-base sm:text-lg max-w-2xl mb-8 leading-relaxed">
-                </p>
-
                 <div class="flex flex-wrap justify-center gap-4">
                     <a href="#prices" class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-lg hover:shadow-red-600/30 transition">
                         ယနေ့ ဆီစျေးနှုန်းစစ်ဆေးရန်
@@ -181,7 +176,6 @@
 
                 <!-- Price Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    
                     <!-- 92 Ron -->
                     <div class="fuel-card-glow bg-white rounded-2xl p-6 shadow-sm border border-gray-100 relative overflow-hidden">
                         <div class="w-2 h-full bg-green-500 absolute left-0 top-0"></div>
@@ -261,7 +255,6 @@
                             <span class="text-green-600 font-bold"><i class="fa-solid fa-circle-check"></i> ပုံမှန်ရရှိနိုင်</span>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
@@ -346,7 +339,6 @@
                     <div class="h-80 sm:h-96 bg-gray-200 rounded-2xl overflow-hidden border border-gray-300 relative">
                         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3794.1!2d96.85!3d22.21!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDEyJzM2LjAiTiA5NsKwNTEnMDAuMCJF!5e0!3m2!1sen!2smm!4v1700000000000" class="w-full h-full border-0" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                         
-                        <!-- Direct Link Button Over Map (Fallback for mobile apps) -->
                         <div class="absolute bottom-4 right-4 z-10">
                             <a href="https://maps.app.goo.gl/2MRScEeJyhbtGgCc9?g_st=ac" target="_blank" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow-lg flex items-center gap-2 transition">
                                 <i class="fa-solid fa-location-arrow"></i> Google Maps တွင် ဖွင့်ရန်
@@ -379,7 +371,7 @@
 
     <!-- Weather & Live Clock Automation Script -->
     <script>
-        // Yatsauk Coordinates (Default Fallback)
+        // Default Coordinates & Location (ရပ်စောက်မြို့)
         const DEFAULT_LAT = 22.2100;
         const DEFAULT_LON = 96.8500;
         const DEFAULT_LOCATION_NAME = "ရပ်စောက်မြို့ ရာသီဥတု";
@@ -408,8 +400,9 @@
             return { text: 'ရာသီဥတု သာယာသည်', icon: 'fa-solid fa-cloud text-gray-400' };
         }
 
-        // Fetch Weather Data
-        function loadWeather(lat, lon, title) {
+        // Fetch Weather Data & Location Name
+        function loadWeather(lat, lon, locationTitle) {
+            // Fetch Weather from Open-Meteo
             fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
                 .then(res => res.json())
                 .then(data => {
@@ -418,7 +411,7 @@
                     const wind = current.windspeed;
                     const status = getWeatherStatus(current.weathercode);
 
-                    document.getElementById('w-location').innerText = title;
+                    document.getElementById('w-location').innerText = locationTitle;
                     document.getElementById('w-temp').innerText = `${temp} °C`;
                     document.getElementById('w-wind').innerText = `${wind} km/h`;
                     document.getElementById('w-status').innerText = status.text;
@@ -429,11 +422,24 @@
                 });
         }
 
+        // Get Location Name from Latitude & Longitude (Reverse Geocoding)
+        function fetchLocationNameAndWeather(lat, lon) {
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&accept-language=my,en`)
+                .then(res => res.json())
+                .then(data => {
+                    let cityName = data.address.city || data.address.town || data.address.village || data.address.state || "လက်ရှိ တည်နေရာ";
+                    loadWeather(lat, lon, `${cityName} ရာသီဥတု`);
+                })
+                .catch(() => {
+                    loadWeather(lat, lon, "လက်ရှိ တည်နေရာ ရာသီဥတု");
+                });
+        }
+
         // Auto Location Check & Fetch
         function fetchWeatherData() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                    (pos) => loadWeather(pos.coords.latitude, pos.coords.longitude, "လက်ရှိ တည်နေရာ ရာသီဥတု"),
+                    (pos) => fetchLocationNameAndWeather(pos.coords.latitude, pos.coords.longitude),
                     () => loadWeather(DEFAULT_LAT, DEFAULT_LON, DEFAULT_LOCATION_NAME),
                     { timeout: 8000 }
                 );
