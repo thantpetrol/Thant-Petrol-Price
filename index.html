@@ -127,6 +127,47 @@
             </div>
         </section>
 
+        <!-- Live Weather & Clock Widget Section -->
+        <section class="py-6 bg-slate-900 text-white border-y border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-slate-800/90 border border-slate-700/80 rounded-2xl p-5 shadow-lg flex flex-col md:flex-row justify-between items-center gap-6">
+                    
+                    <!-- Weather Info -->
+                    <div class="flex items-center gap-4">
+                        <div id="w-icon" class="text-4xl sm:text-5xl text-yellow-400">
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 id="w-location" class="text-lg font-bold text-gray-100">ရပ်စောက်မြို့ ရာသီဥတု</h3>
+                                <button onclick="fetchWeatherData()" class="text-xs bg-slate-700 hover:bg-slate-600 text-gray-300 px-2 py-1 rounded transition flex items-center gap-1">
+                                    <i class="fa-solid fa-rotate"></i> Refresh
+                                </button>
+                            </div>
+                            <p id="w-status" class="text-xs sm:text-sm text-gray-400">ရာသီဥတု အချက်အလက် ယူနေပါသည်...</p>
+                        </div>
+                    </div>
+
+                    <!-- Temperature, Wind & Clock -->
+                    <div class="flex items-center gap-6 sm:gap-8 divide-x divide-slate-700">
+                        <div class="text-center pr-2">
+                            <span class="text-xs text-gray-400 block">အပူချိန်</span>
+                            <span id="w-temp" class="text-2xl sm:text-3xl font-extrabold text-brand-yellow">-- °C</span>
+                        </div>
+                        <div class="text-center pl-6">
+                            <span class="text-xs text-gray-400 block">လေတိုက်နှုန်း</span>
+                            <span id="w-wind" class="text-lg sm:text-xl font-bold text-gray-200">-- km/h</span>
+                        </div>
+                        <div class="text-center pl-6">
+                            <span class="text-xs text-gray-400 block">လက်ရှိ အချိန်</span>
+                            <span id="live-clock" class="text-lg sm:text-xl font-mono font-bold text-emerald-400">00:00:00 AM</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
         <!-- Fuel Price Section -->
         <section id="prices" class="py-16 bg-slate-100">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -336,5 +377,76 @@
         </div>
     </footer>
 
+    <!-- Weather & Live Clock Automation Script -->
+    <script>
+        // Yatsauk Coordinates (Default Fallback)
+        const DEFAULT_LAT = 22.2100;
+        const DEFAULT_LON = 96.8500;
+        const DEFAULT_LOCATION_NAME = "ရပ်စောက်မြို့ ရာသီဥတု";
+
+        // Real-Time Clock
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            const formattedTime = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+            document.getElementById('live-clock').innerText = formattedTime;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Weather Status Code Mapping
+        function getWeatherStatus(code) {
+            if (code === 0) return { text: 'သာယာသော မိုးကောင်းကင်', icon: 'fa-solid fa-sun text-yellow-400' };
+            if (code >= 1 && code <= 3) return { text: 'တိမ်အသင့်အတင့် ရှိသည်', icon: 'fa-solid fa-cloud-sun text-yellow-400' };
+            if (code >= 51 && code <= 67) return { text: 'မိုးဖွဲများ ရွာသွန်းနေသည်', icon: 'fa-solid fa-cloud-rain text-blue-400' };
+            if (code >= 80 && code <= 82) return { text: 'မိုးသည်းထန်စွာ ရွာနေသည်', icon: 'fa-solid fa-cloud-showers-heavy text-blue-500' };
+            if (code >= 95) return { text: 'မိုးကြိုးပစ်၍ မိုးရွာနေသည်', icon: 'fa-solid fa-cloud-bolt text-yellow-500' };
+            return { text: 'ရာသီဥတု သာယာသည်', icon: 'fa-solid fa-cloud text-gray-400' };
+        }
+
+        // Fetch Weather Data
+        function loadWeather(lat, lon, title) {
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
+                .then(res => res.json())
+                .then(data => {
+                    const current = data.current_weather;
+                    const temp = Math.round(current.temperature);
+                    const wind = current.windspeed;
+                    const status = getWeatherStatus(current.weathercode);
+
+                    document.getElementById('w-location').innerText = title;
+                    document.getElementById('w-temp').innerText = `${temp} °C`;
+                    document.getElementById('w-wind').innerText = `${wind} km/h`;
+                    document.getElementById('w-status').innerText = status.text;
+                    document.getElementById('w-icon').innerHTML = `<i class="${status.icon}"></i>`;
+                })
+                .catch(() => {
+                    document.getElementById('w-status').innerText = "ဒေတာ ရယူ၍ မရနိုင်ပါ။";
+                });
+        }
+
+        // Auto Location Check & Fetch
+        function fetchWeatherData() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => loadWeather(pos.coords.latitude, pos.coords.longitude, "လက်ရှိ တည်နေရာ ရာသီဥတု"),
+                    () => loadWeather(DEFAULT_LAT, DEFAULT_LON, DEFAULT_LOCATION_NAME),
+                    { timeout: 8000 }
+                );
+            } else {
+                loadWeather(DEFAULT_LAT, DEFAULT_LON, DEFAULT_LOCATION_NAME);
+            }
+        }
+
+        // Initial Fetch
+        fetchWeatherData();
+
+        // Auto Refresh Weather Every 10 Minutes
+        setInterval(fetchWeatherData, 600000);
+    </script>
 </body>
 </html>
