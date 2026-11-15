@@ -413,10 +413,10 @@
         </div>
     </div>
 
-    <!-- Weather, Clock & Firebase Realtime Script -->
+    <!-- Weather, Clock & Firebase One-Time Fetch Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-database.js";
+        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCjsEV9MjhBH-unnsK0uwifERC2LtiDPY4",
@@ -436,19 +436,17 @@
             prices: { ron92: "5195", ron95: "5350", diesel: "5090", pdiesel: "6000" }
         };
 
-        // Realtime Listener with Connection Efficiency
-        onValue(stationRef, (snapshot) => {
+        // One-time Fetch (ဒေတာတစ်ခါဆွဲမယ်၊ ပြီးရင် Connection ချက်ချင်းပြတ်မယ် - Connection Limit လုံးဝပြည့်စရာမလိုပါ)
+        get(stationRef).then((snapshot) => {
             const data = snapshot.val();
             if (data) {
                 currentData = data;
                 updateUI(data);
             } else {
-                // Initialize default if empty
                 set(stationRef, currentData);
             }
-        }, {
-            // Automatically detach/manage listeners when inactive if needed
-            onlyOnce: false
+        }).catch((error) => {
+            console.error("ဒေတာရယူရာတွင် အမှားအယွင်းရှိပါသည်: ", error);
         });
 
         function updateUI(data) {
@@ -537,6 +535,8 @@
 
             set(stationRef, newData)
                 .then(() => {
+                    currentData = newData;
+                    updateUI(newData);
                     alert("စျေးနှုန်းနှင့် ဆိုင်အခြေအနေ အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။");
                     closeAdminModal();
                 })
@@ -546,6 +546,7 @@
         }
     </script>
 
+    <!-- Weather & Clock Script -->
     <script>
         // Default Coordinates & Location (ရပ်စောက်မြို့)
         const DEFAULT_LAT = 22.2100;
