@@ -370,7 +370,7 @@
 
     <!-- Admin Settings Modal -->
     <div id="admin-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
                 <h3 class="text-xl font-bold text-gray-900"><i class="fa-solid fa-gear text-red-600 mr-2"></i> စီမံခန့်ခွဲမှု ဆက်တင်များ</h3>
                 <button onclick="closeAdminModal()" class="text-gray-400 hover:text-gray-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -388,21 +388,37 @@
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Octane 92 (ကျပ် / လီတာ)</label>
                     <input type="number" id="admin-ron92" class="w-full border border-gray-300 rounded-lg p-2.5 text-gray-800 font-medium">
+                    <select id="admin-status-ron92" class="w-full mt-1 border border-gray-300 rounded-lg p-2 text-sm text-gray-800">
+                        <option value="normal">ပုံမှန်ရရှိနိုင်</option>
+                        <option value="out">ကုန်နေပါသည်</option>
+                    </select>
                 </div>
 
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Octane 95 (ကျပ် / လီတာ)</label>
                     <input type="number" id="admin-ron95" class="w-full border border-gray-300 rounded-lg p-2.5 text-gray-800 font-medium">
+                    <select id="admin-status-ron95" class="w-full mt-1 border border-gray-300 rounded-lg p-2 text-sm text-gray-800">
+                        <option value="normal">ပုံမှန်ရရှိနိုင်</option>
+                        <option value="out">ကုန်နေပါသည်</option>
+                    </select>
                 </div>
 
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Diesel (ကျပ် / လီတာ)</label>
                     <input type="number" id="admin-diesel" class="w-full border border-gray-300 rounded-lg p-2.5 text-gray-800 font-medium">
+                    <select id="admin-status-diesel" class="w-full mt-1 border border-gray-300 rounded-lg p-2 text-sm text-gray-800">
+                        <option value="normal">ပုံမှန်ရရှိနိုင်</option>
+                        <option value="out">ကုန်နေပါသည်</option>
+                    </select>
                 </div>
 
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Premium Diesel (ကျပ် / လီတာ)</label>
                     <input type="number" id="admin-pdiesel" class="w-full border border-gray-300 rounded-lg p-2.5 text-gray-800 font-medium">
+                    <select id="admin-status-pdiesel" class="w-full mt-1 border border-gray-300 rounded-lg p-2 text-sm text-gray-800">
+                        <option value="normal">ပုံမှန်ရရှိနိုင်</option>
+                        <option value="out">ကုန်နေပါသည်</option>
+                    </select>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-4 border-t">
@@ -433,10 +449,10 @@
 
         let currentData = {
             status: "normal",
-            prices: { ron92: "5195", ron95: "5350", diesel: "5090", pdiesel: "6000" }
+            prices: { ron92: "5195", ron95: "5350", diesel: "5090", pdiesel: "6000" },
+            fuelStatus: { ron92: "normal", ron95: "normal", diesel: "normal", pdiesel: "normal" }
         };
 
-        // One-time Fetch (ဒေတာတစ်ခါဆွဲမယ်၊ ပြီးရင် Connection ချက်ချင်းပြတ်မယ် - Connection Limit လုံးဝပြည့်စရာမလိုပါ)
         get(stationRef).then((snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -450,7 +466,13 @@
         });
 
         function updateUI(data) {
-            const isClosed = data.status === "closed";
+            const now = new Date();
+            const hours = now.getHours();
+            // Opening hours: 6 AM to 6 PM (06:00 to 18:00)
+            const isBusinessHours = hours >= 6 && hours < 18;
+            
+            // Auto close outside business hours, or if admin explicitly closed during business hours
+            const isClosed = !isBusinessHours || (data.status === "closed");
             const banner = document.getElementById('closed-banner');
 
             if (isClosed) {
@@ -465,10 +487,11 @@
                 document.getElementById('unit-diesel').innerText = "";
                 document.getElementById('unit-pdiesel').innerText = "";
 
-                document.getElementById('status-ron92').innerHTML = '<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> ဆိုင်ပိတ်</span>';
-                document.getElementById('status-ron95').innerHTML = '<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> ဆိုင်ပိတ်</span>';
-                document.getElementById('status-diesel').innerHTML = '<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> ဆိုင်ပိတ်</span>';
-                document.getElementById('status-pdiesel').innerHTML = '<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> ဆိုင်ပိတ်</span>';
+                const closedStatus = '<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> ဆိုင်ပိတ်ထားသည်</span>';
+                document.getElementById('status-ron92').innerHTML = closedStatus;
+                document.getElementById('status-ron95').innerHTML = closedStatus;
+                document.getElementById('status-diesel').innerHTML = closedStatus;
+                document.getElementById('status-pdiesel').innerHTML = closedStatus;
             } else {
                 banner.classList.add('hidden');
                 document.getElementById('price-ron92').innerText = data.prices.ron92;
@@ -482,13 +505,27 @@
                 document.getElementById('unit-diesel').innerText = unitText;
                 document.getElementById('unit-pdiesel').innerText = unitText;
 
-                const normalStatus = '<span class="text-green-600 font-bold"><i class="fa-solid fa-circle-check"></i> ပုံမှန်ရရှိနိုင်</span>';
-                document.getElementById('status-ron92').innerHTML = normalStatus;
-                document.getElementById('status-ron95').innerHTML = normalStatus;
-                document.getElementById('status-diesel').innerHTML = normalStatus;
-                document.getElementById('status-pdiesel').innerHTML = normalStatus;
+                const fs = data.fuelStatus || { ron92: "normal", ron95: "normal", diesel: "normal", pdiesel: "normal" };
+
+                const renderFuelStatus = (statusVal) => {
+                    if (statusVal === "out") {
+                        return '<span class="text-red-600 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> ကုန်နေပါသည်</span>';
+                    } else {
+                        return '<span class="text-green-600 font-bold"><i class="fa-solid fa-circle-check"></i> ပုံမှန်ရရှိနိုင်</span>';
+                    }
+                };
+
+                document.getElementById('status-ron92').innerHTML = renderFuelStatus(fs.ron92);
+                document.getElementById('status-ron95').innerHTML = renderFuelStatus(fs.ron95);
+                document.getElementById('status-diesel').innerHTML = renderFuelStatus(fs.diesel);
+                document.getElementById('status-pdiesel').innerHTML = renderFuelStatus(fs.pdiesel);
             }
         }
+
+        // Periodically re-evaluate time-based open/close status every minute
+        setInterval(() => {
+            updateUI(currentData);
+        }, 60000);
 
         // Admin Trigger (5 clicks within 2 seconds)
         let clickCount = 0;
@@ -511,6 +548,13 @@
                     document.getElementById('admin-ron95').value = currentData.prices.ron95;
                     document.getElementById('admin-diesel').value = currentData.prices.diesel;
                     document.getElementById('admin-pdiesel').value = currentData.prices.pdiesel;
+
+                    const fs = currentData.fuelStatus || { ron92: "normal", ron95: "normal", diesel: "normal", pdiesel: "normal" };
+                    document.getElementById('admin-status-ron92').value = fs.ron92;
+                    document.getElementById('admin-status-ron95').value = fs.ron95;
+                    document.getElementById('admin-status-diesel').value = fs.diesel;
+                    document.getElementById('admin-status-pdiesel').value = fs.pdiesel;
+
                     document.getElementById('admin-modal').classList.remove('hidden');
                 } else if (pwd !== null) {
                     alert("စကားဝှက် မှားယွင်းနေပါသည်။");
@@ -530,6 +574,12 @@
                     ron95: document.getElementById('admin-ron95').value,
                     diesel: document.getElementById('admin-diesel').value,
                     pdiesel: document.getElementById('admin-pdiesel').value
+                },
+                fuelStatus: {
+                    ron92: document.getElementById('admin-status-ron92').value,
+                    ron95: document.getElementById('admin-status-ron95').value,
+                    diesel: document.getElementById('admin-status-diesel').value,
+                    pdiesel: document.getElementById('admin-status-pdiesel').value
                 }
             };
 
@@ -548,12 +598,10 @@
 
     <!-- Weather & Clock Script -->
     <script>
-        // Default Coordinates & Location (ရပ်စောက်မြို့)
         const DEFAULT_LAT = 22.2100;
         const DEFAULT_LON = 96.8500;
         const DEFAULT_LOCATION_NAME = "ရပ်စောက်မြို့ ရာသီဥတု";
 
-        // Real-Time Clock
         function updateClock() {
             const now = new Date();
             let hours = now.getHours();
@@ -567,7 +615,6 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Weather Status Code Mapping
         function getWeatherStatus(code) {
             if (code === 0) return { text: 'သာယာသော မိုးကောင်းကင်', icon: 'fa-solid fa-sun text-yellow-400' };
             if (code >= 1 && code <= 3) return { text: 'တိမ်အသင့်အတင့် ရှိသည်', icon: 'fa-solid fa-cloud-sun text-yellow-400' };
@@ -577,7 +624,6 @@
             return { text: 'ရာသီဥတု သာယာသည်', icon: 'fa-solid fa-cloud text-gray-400' };
         }
 
-        // Fetch Weather Data & Location Name
         function loadWeather(lat, lon, locationTitle) {
             fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
                 .then(res => res.json())
