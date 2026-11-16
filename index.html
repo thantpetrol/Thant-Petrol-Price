@@ -377,6 +377,24 @@
             </div>
             
             <div class="space-y-4">
+                <!-- Visitor Count & Track History Section -->
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <span class="text-xs text-blue-600 font-bold block">စုစုပေါင်း ဝင်ရောက်ကြည့်ရှုသူ</span>
+                            <span id="admin-visitor-count" class="text-2xl font-extrabold text-blue-900">0</span>
+                            <span class="text-xs text-blue-600 ml-1">ဦး</span>
+                        </div>
+                        <button onclick="clearVisitorHistory()" class="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold rounded-lg transition flex items-center gap-1">
+                            <i class="fa-solid fa-trash"></i> မှတ်တမ်းဖျက်မည်
+                        </button>
+                    </div>
+                    <!-- Visitor Logs List Container -->
+                    <div class="mt-3 max-h-36 overflow-y-auto bg-white rounded-lg p-2 border border-blue-100 text-xs text-gray-700 space-y-1" id="admin-visitor-logs">
+                        <p class="text-gray-400 text-center py-2">မှတ်တမ်းများ မရှိသေးပါ</p>
+                    </div>
+                </div>
+
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">ဆိုင်အခြေအနေ</label>
                     <select id="admin-status" class="w-full border border-gray-300 rounded-lg p-2.5 text-gray-800 font-medium">
@@ -432,7 +450,7 @@
     <!-- Weather, Clock & Firebase One-Time Fetch Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js";
-        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-database.js";
+        import { getDatabase, ref, get, set, runTransaction, push } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCjsEV9MjhBH-unnsK0uwifERC2LtiDPY4",
@@ -450,8 +468,57 @@
         let currentData = {
             status: "normal",
             prices: { ron92: "5195", ron95: "5350", diesel: "5090", pdiesel: "6000" },
-            fuelStatus: { ron92: "normal", ron95: "normal", diesel: "normal", pdiesel: "normal" }
+            fuelStatus: { ron92: "normal", ron95: "normal", diesel: "normal", pdiesel: "normal" },
+            visitorCount: 0,
+            visitorLogs: {}
         };
+
+        // Visitor Tracking Logic (Admin ဝင်ကြည့်လျှင် Count နှင့် Log မထည့်ပါ)
+        const isAdmin = sessionStorage.getItem('is_admin') === 'true';
+        if (!isAdmin && !sessionStorage.getItem('visited_station')) {
+            sessionStorage.setItem('visited_station', 'true');
+
+            // Increment visitor count
+            const countRef = ref(db, 'stationData/visitorCount');
+            runTransaction(countRef, (val) => (val || 0) + 1);
+
+            // Fetch location if permitted
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const lat = pos.coords.latitude;
+                        const lon = pos.coords.longitude;
+                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&accept-language=my,en`)
+                            .then(res => res.json())
+                            .then(data => {
+                                let locName = data.address.city || data.address.town || data.address.village || data.address.state || `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+                                push(ref(db, 'stationData/visitorLogs'), {
+                                    location: locName,
+                                    time: new Date().toLocaleString()
+                                });
+                            })
+                            .catch(() => {
+                                push(ref(db, 'stationData/visitorLogs'), {
+                                    location: `${lat.toFixed(4)}, ${lon.toFixed(4)}`,
+                                    time: new Date().toLocaleString()
+                                });
+                            });
+                    },
+                    () => {
+                        push(ref(db, 'stationData/visitorLogs'), {
+                            location: "တည်နေရာ မပေးထားပါ",
+                            time: new Date().toLocaleString()
+                        });
+                    },
+                    { timeout: 5000 }
+                );
+            } else {
+                push(ref(db, 'stationData/visitorLogs'), {
+                    location: "တည်နေရာ မရနိုင်ပါ",
+                    time: new Date().toLocaleString()
+                });
+            }
+        }
 
         get(stationRef).then((snapshot) => {
             const data = snapshot.val();
@@ -543,6 +610,10 @@
                 clickCount = 0;
                 let pwd = prompt("Admin Password ထည့်ပါ:");
                 if (pwd === "734803") {
+                    // Mark as admin so visitor count won't increment for admin
+                    sessionStorage.setItem('is_admin', 'true');
+                    sessionStorage.setItem('visited_station', 'true');
+
                     document.getElementById('admin-status').value = currentData.status;
                     document.getElementById('admin-ron92').value = currentData.prices.ron92;
                     document.getElementById('admin-ron95').value = currentData.prices.ron95;
@@ -555,6 +626,26 @@
                     document.getElementById('admin-status-diesel').value = fs.diesel;
                     document.getElementById('admin-status-pdiesel').value = fs.pdiesel;
 
+                    // Display Visitor Count & Logs
+                    document.getElementById('admin-visitor-count').innerText = currentData.visitorCount || 0;
+                    const logsContainer = document.getElementById('admin-visitor-logs');
+                    logsContainer.innerHTML = '';
+                    if (currentData.visitorLogs) {
+                        const logs = Object.values(currentData.visitorLogs);
+                        if (logs.length > 0) {
+                            logs.reverse().forEach(log => {
+                                const div = document.createElement('div');
+                                div.className = "flex justify-between items-center border-b border-gray-100 pb-1 mb-1";
+                                div.innerHTML = `<span class="font-medium text-gray-800"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i> ${log.location}</span><span class="text-gray-400 text-[10px]">${log.time}</span>`;
+                                logsContainer.appendChild(div);
+                            });
+                        } else {
+                            logsContainer.innerHTML = '<p class="text-gray-400 text-center py-2">မှတ်တမ်းများ မရှိသေးပါ</p>';
+                        }
+                    } else {
+                        logsContainer.innerHTML = '<p class="text-gray-400 text-center py-2">မှတ်တမ်းများ မရှိသေးပါ</p>';
+                    }
+
                     document.getElementById('admin-modal').classList.remove('hidden');
                 } else if (pwd !== null) {
                     alert("စကားဝှက် မှားယွင်းနေပါသည်။");
@@ -566,8 +657,22 @@
             document.getElementById('admin-modal').classList.add('hidden');
         }
 
+        window.clearVisitorHistory = function() {
+            if (confirm("ဝင်ရောက်ကြည့်ရှုသူ မှတ်တမ်းအားလုံးကို ဖျက်မည်မှာ သေချာပါသလား?")) {
+                set(ref(db, 'stationData/visitorCount'), 0);
+                set(ref(db, 'stationData/visitorLogs'), null).then(() => {
+                    currentData.visitorCount = 0;
+                    currentData.visitorLogs = {};
+                    document.getElementById('admin-visitor-count').innerText = '0';
+                    document.getElementById('admin-visitor-logs').innerHTML = '<p class="text-gray-400 text-center py-2">မှတ်တမ်းများ မရှိသေးပါ</p>';
+                    alert("မှတ်တမ်းများ အောင်မြင်စွာ ဖျက်ပြီးပါပြီ။");
+                });
+            }
+        }
+
         window.saveAdminSettings = function() {
             const newData = {
+                ...currentData,
                 status: document.getElementById('admin-status').value,
                 prices: {
                     ron92: document.getElementById('admin-ron92').value,
