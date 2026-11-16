@@ -488,10 +488,10 @@
             console.error("ဒေတာရယူရာတွင် အမှားအယွင်းရှိပါသည်: ", error);
         });
 
-        // Visitor Tracking & Location Logic (Excludes Admin)
+        // Visitor Tracking & Location Logic (Strictly Excludes Admin using localStorage)
         const visitorCountRef = ref(db, 'stationData/visitorCount');
         const visitorLogsRef = ref(db, 'stationData/visitorLogs');
-        const isAdmin = sessionStorage.getItem('is_admin') === 'true';
+        const isAdmin = localStorage.getItem('is_admin') === 'true';
 
         if (!isAdmin && !sessionStorage.getItem('visited_station')) {
             sessionStorage.setItem('visited_station', 'true');
@@ -604,9 +604,8 @@
                 clickCount = 0;
                 let pwd = prompt("Admin Password ထည့်ပါ:");
                 if (pwd === "734803") {
-                    // Mark as admin so their own view doesn't trigger visitor counting/location logging
-                    sessionStorage.setItem('is_admin', 'true');
-                    sessionStorage.setItem('visited_station', 'true');
+                    // Permanently mark this browser/device as admin in localStorage so it never counts visitor/location again
+                    localStorage.setItem('is_admin', 'true');
 
                     document.getElementById('admin-status').value = currentData.status;
                     document.getElementById('admin-ron92').value = currentData.prices.ron92;
