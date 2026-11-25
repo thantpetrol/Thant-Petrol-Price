@@ -167,7 +167,7 @@
                             <span id="w-wind" class="text-lg sm:text-xl font-bold text-gray-200">-- km/h</span>
                         </div>
                         <div class="text-center pl-6">
-                            <span class="text-xs text-gray-400 block">လက်ရှိ အချိန်</span>
+                            <span class="text-xs text-gray-400 block">မြန်မာစံတော်ချိန်</span>
                             <span id="live-clock" class="text-lg sm:text-xl font-mono font-bold text-emerald-400">00:00:00 AM</span>
                         </div>
                     </div>
@@ -411,10 +411,11 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">ဆိုင်အခြေအနေ</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">ဆိုင်အခြေအနေ (Auto / Manual)</label>
                     <select id="admin-status" class="w-full border border-gray-300 rounded-lg p-2.5 text-gray-800 font-medium">
-                        <option value="normal">ဆီပုံမှန်ရရှိပါသည်</option>
-                        <option value="closed">ဆိုင်ပိတ်ထားပါသည်</option>
+                        <option value="auto">Auto (မနက် ၆:၀၀ မှ ညနေ ၆:၀၀ အလိုအလျောက်)</option>
+                        <option value="normal">Manual - ဆိုင်ဖွင့်ထားမည် (ဆီပုံမှန်ရရှိပါသည်)</option>
+                        <option value="closed">Manual - ဆိုင်ပိတ်ထားမည် (ဆိုင်ပိတ်ထားပါသည်)</option>
                     </select>
                 </div>
 
@@ -481,12 +482,32 @@
         const stationRef = ref(db, 'stationData');
 
         let currentData = {
-            status: "normal",
+            status: "auto",
             prices: { ron92: "5195", ron95: "5350", diesel: "5090", pdiesel: "6000" },
             fuelStatus: { ron92: "normal", ron95: "normal", diesel: "normal", pdiesel: "normal" },
             visitorCount: 0,
             visitorLogs: {}
         };
+
+        // Helper function to get current Myanmar Time (Asia/Yangon, UTC+6:30)
+        function getMyanmarTimeParts() {
+            const now = new Date();
+            const formatter = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'Asia/Yangon',
+                hour12: false,
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric'
+            });
+            const parts = formatter.formatToParts(now);
+            let hour = 0, minute = 0, second = 0;
+            parts.forEach(p => {
+                if (p.type === 'hour') hour = parseInt(p.value, 10) % 24;
+                if (p.type === 'minute') minute = parseInt(p.value, 10);
+                if (p.type === 'second') second = parseInt(p.value, 10);
+            });
+            return { hour, minute, second };
+        }
 
         // Fetch Data from Firebase
         get(stationRef).then((snapshot) => {
@@ -496,9 +517,11 @@
                 updateUI(data);
             } else {
                 set(stationRef, currentData);
+                updateUI(currentData);
             }
         }).catch((error) => {
             console.error("ဒေတာရယူရာတွင် အမှားအယွင်းရှိပါသည်: ", error);
+            updateUI(currentData);
         });
 
         // Visitor Tracking & Location Logic (Strictly Excludes Admin using localStorage)
@@ -543,11 +566,21 @@
         }
 
         function updateUI(data) {
-            const now = new Date();
-            const hours = now.getHours();
-            const isBusinessHours = hours >= 6 && hours < 18;
+            const mmTime = getMyanmarTimeParts();
+            const isMyanmarBusinessHours = mmTime.hour >= 6 && mmTime.hour < 18;
             
-            const isClosed = !isBusinessHours || (data.status === "closed");
+            let isClosed = false;
+            if (data.status === "closed") {
+                // Manual Close
+                isClosed = true;
+            } else if (data.status === "normal") {
+                // Manual Open
+                isClosed = false;
+            } else {
+                // Auto Mode (default if status === "auto" or undefined)
+                isClosed = !isMyanmarBusinessHours;
+            }
+
             const banner = document.getElementById('closed-banner');
 
             if (isClosed) {
@@ -597,9 +630,11 @@
             }
         }
 
+        // Initial check and periodic check every 15 seconds for accurate Myanmar Time transition
+        updateUI(currentData);
         setInterval(() => {
             updateUI(currentData);
-        }, 60000);
+        }, 15000);
 
         // Admin Trigger (5 clicks within 2 seconds)
         let clickCount = 0;
@@ -620,7 +655,7 @@
                     // Permanently mark this browser/device as admin in localStorage so it never counts visitor/location again
                     localStorage.setItem('is_admin', 'true');
 
-                    document.getElementById('admin-status').value = currentData.status;
+                    document.getElementById('admin-status').value = currentData.status || "auto";
                     document.getElementById('admin-ron92').value = currentData.prices.ron92;
                     document.getElementById('admin-ron95').value = currentData.prices.ron95;
                     document.getElementById('admin-diesel').value = currentData.prices.diesel;
@@ -720,13 +755,14 @@
 
         function updateClock() {
             const now = new Date();
-            let hours = now.getHours();
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12 || 12;
-            const formattedTime = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
-            document.getElementById('live-clock').innerText = formattedTime;
+            const formatter = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'Asia/Yangon',
+                hour12: true,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('live-clock').innerText = formatter.format(now);
         }
         setInterval(updateClock, 1000);
         updateClock();
