@@ -203,8 +203,13 @@
                 <div class="text-center max-w-3xl mx-auto mb-12">
                     <h2 class="text-3xl font-bold text-gray-900 mb-2">ယနေ့ စက်သုံးဆီ စျေးနှုန်းများ</h2>
                     <p class="text-gray-600">မင်္ဂလာပါ၊ ယနေ့အတွက် စက်သုံးဆီစျေးနှုန်းများ ဖြစ်ပါသည်။</p>
-                    <div class="mt-3 inline-flex items-center gap-2 text-xs font-semibold bg-gray-200 text-gray-700 px-3 py-1 rounded-full">
-                        <i class="fa-solid fa-rotate"></i> အချိန်နှင့်အမျှပြောင်းလဲနိုင်ပါသည်
+                    <div class="mt-3 flex flex-wrap justify-center items-center gap-2">
+                        <span class="inline-flex items-center gap-2 text-xs font-semibold bg-gray-200 text-gray-700 px-3 py-1 rounded-full">
+                            <i class="fa-solid fa-rotate"></i> အချိန်နှင့်အမျှပြောင်းလဲနိုင်ပါသည်
+                        </span>
+                        <button id="refresh-prices-btn" onclick="refreshFuelPrices()" class="inline-flex items-center gap-1.5 text-xs font-semibold bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-full transition cursor-pointer">
+                            <i id="refresh-prices-icon" class="fa-solid fa-rotate"></i> Refresh
+                        </button>
                     </div>
                 </div>
 
@@ -539,6 +544,28 @@
             console.error("ဒေတာရယူရာတွင် အမှားအယွင်းရှိပါသည်: ", error);
             updateUI(currentData);
         });
+
+        // Refresh Fuel Prices Only (using get(), no continuous connection)
+        window.refreshFuelPrices = function() {
+            const btn = document.getElementById('refresh-prices-btn');
+            const icon = document.getElementById('refresh-prices-icon');
+            if (btn) btn.disabled = true;
+            if (icon) icon.classList.add('fa-spin');
+
+            get(stationRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    currentData = snapshot.val();
+                    updateUI(currentData);
+                }
+            }).catch((error) => {
+                console.error("ဆီစျေးနှုန်း ပြန်လည်ရယူရာတွင် အမှားအယွင်းရှိပါသည်: ", error);
+            }).finally(() => {
+                setTimeout(() => {
+                    if (icon) icon.classList.remove('fa-spin');
+                    if (btn) btn.disabled = false;
+                }, 500);
+            });
+        };
 
         // Visitor Tracking & Location Logic (Strictly Excludes Admin using localStorage)
         const visitorCountRef = ref(db, 'stationData/visitorCount');
