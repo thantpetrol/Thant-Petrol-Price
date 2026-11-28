@@ -484,20 +484,25 @@
         </div>
     </div>
 
-    <!-- Weather, Clock & Firebase Script -->
+    <!-- Firebase Script -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js";
-        import { getDatabase, ref, get, set, runTransaction, push, update } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-database.js";
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+        import { getDatabase, ref, get, set, runTransaction, push, update } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
 
+        // Your web app's Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyCjsEV9MjhBH-unnsK0uwifERC2LtiDPY4",
-            authDomain: "liveprice-9e8fd.firebaseapp.com",
-            projectId: "liveprice-9e8fd",
-            storageBucket: "liveprice-9e8fd.firebasestorage.app",
-            messagingSenderId: "862443612671",
-            appId: "1:862443612671:web:e5f41f60174ef66b981fca"
+            apiKey: "AIzaSyB9GSDNqS3isq9AVKch7vdvj6_KyCJAE38",
+            authDomain: "dailyprice-a38e8.firebaseapp.com",
+            projectId: "dailyprice-a38e8",
+            storageBucket: "dailyprice-a38e8.firebasestorage.app",
+            messagingSenderId: "153852978409",
+            appId: "1:153852978409:web:75054f1a70a469bef53c78"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const stationRef = ref(db, 'stationData');
