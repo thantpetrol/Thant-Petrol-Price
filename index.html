@@ -171,7 +171,7 @@
                                     <i class="fa-solid fa-rotate"></i> Refresh
                                 </button>
                             </div>
-                            <p id="w-status" class="text-xs sm:text-sm text-gray-400">ရာသီဥတု အချက်အလက် ယူနေပါသည်...</p>
+                            <p id="w-status" class="text-xs sm:text-sm text-gray-400">Loading weather...</p>
                         </div>
                     </div>
 
@@ -787,7 +787,7 @@
 
         const DEFAULT_LAT = 22.2100;
         const DEFAULT_LON = 96.8500;
-        const DEFAULT_LOCATION_NAME = "ရပ်စောက်မြို့ ရာသီဥတု";
+        const DEFAULT_LOCATION_NAME = "Lawksawk Weather";
 
         function updateClock() {
             const now = new Date();
@@ -804,12 +804,34 @@
         updateClock();
 
         function getWeatherStatus(code) {
-            if (code === 0) return { text: 'သာယာသော မိုးကောင်းကင်', icon: 'fa-solid fa-sun text-yellow-400' };
-            if (code >= 1 && code <= 3) return { text: 'တိမ်အသင့်အတင့် ရှိသည်', icon: 'fa-solid fa-cloud-sun text-yellow-400' };
-            if (code >= 51 && code <= 67) return { text: 'မိုးဖွဲများ ရွာသွန်းနေသည်', icon: 'fa-solid fa-cloud-rain text-blue-400' };
-            if (code >= 80 && code <= 82) return { text: 'မိုးသည်းထန်စွာ ရွာနေသည်', icon: 'fa-solid fa-cloud-showers-heavy text-blue-500' };
-            if (code >= 95) return { text: 'မိုးကြိုးပစ်၍ မိုးရွာနေသည်', icon: 'fa-solid fa-cloud-bolt text-yellow-500' };
-            return { text: 'ရာသီဥတု သာယာသည်', icon: 'fa-solid fa-cloud text-gray-400' };
+            if (code === 0) return { text: 'Clear sky', icon: 'fa-solid fa-sun text-yellow-400' };
+            if (code === 1) return { text: 'Mainly clear', icon: 'fa-solid fa-cloud-sun text-yellow-400' };
+            if (code === 2) return { text: 'Partly cloudy', icon: 'fa-solid fa-cloud-sun text-yellow-400' };
+            if (code === 3) return { text: 'Overcast', icon: 'fa-solid fa-cloud text-gray-300' };
+            if (code === 45 || code === 48) return { text: 'Fog', icon: 'fa-solid fa-smog text-gray-400' };
+            if (code === 51) return { text: 'Light drizzle', icon: 'fa-solid fa-cloud-rain text-blue-300' };
+            if (code === 53) return { text: 'Moderate drizzle', icon: 'fa-solid fa-cloud-rain text-blue-400' };
+            if (code === 55) return { text: 'Dense drizzle', icon: 'fa-solid fa-cloud-rain text-blue-500' };
+            if (code === 56) return { text: 'Light freezing drizzle', icon: 'fa-solid fa-cloud-rain text-cyan-300' };
+            if (code === 57) return { text: 'Dense freezing drizzle', icon: 'fa-solid fa-cloud-rain text-cyan-400' };
+            if (code === 61) return { text: 'Slight rain', icon: 'fa-solid fa-cloud-rain text-blue-400' };
+            if (code === 63) return { text: 'Moderate rain', icon: 'fa-solid fa-cloud-showers-heavy text-blue-400' };
+            if (code === 65) return { text: 'Heavy rain', icon: 'fa-solid fa-cloud-showers-heavy text-blue-500' };
+            if (code === 66) return { text: 'Light freezing rain', icon: 'fa-solid fa-cloud-showers-heavy text-cyan-300' };
+            if (code === 67) return { text: 'Heavy freezing rain', icon: 'fa-solid fa-cloud-showers-heavy text-cyan-400' };
+            if (code === 71) return { text: 'Slight snow fall', icon: 'fa-solid fa-snowflake text-blue-200' };
+            if (code === 73) return { text: 'Moderate snow fall', icon: 'fa-solid fa-snowflake text-blue-200' };
+            if (code === 75) return { text: 'Heavy snow fall', icon: 'fa-solid fa-snowflake text-blue-100' };
+            if (code === 77) return { text: 'Snow grains', icon: 'fa-solid fa-snowflake text-blue-200' };
+            if (code === 80) return { text: 'Slight rain showers', icon: 'fa-solid fa-cloud-showers-heavy text-blue-400' };
+            if (code === 81) return { text: 'Moderate rain showers', icon: 'fa-solid fa-cloud-showers-heavy text-blue-500' };
+            if (code === 82) return { text: 'Violent rain showers', icon: 'fa-solid fa-cloud-showers-heavy text-blue-600' };
+            if (code === 85) return { text: 'Slight snow showers', icon: 'fa-solid fa-snowflake text-blue-200' };
+            if (code === 86) return { text: 'Heavy snow showers', icon: 'fa-solid fa-snowflake text-blue-100' };
+            if (code === 95) return { text: 'Thunderstorm', icon: 'fa-solid fa-cloud-bolt text-yellow-500' };
+            if (code === 96) return { text: 'Thunderstorm with slight hail', icon: 'fa-solid fa-cloud-bolt text-yellow-500' };
+            if (code === 99) return { text: 'Thunderstorm with heavy hail', icon: 'fa-solid fa-cloud-bolt text-yellow-500' };
+            return { text: 'Unknown', icon: 'fa-solid fa-cloud text-gray-400' };
         }
 
         function loadWeather(lat, lon, locationTitle) {
@@ -828,19 +850,19 @@
                     document.getElementById('w-icon').innerHTML = `<i class="${status.icon}"></i>`;
                 })
                 .catch(() => {
-                    document.getElementById('w-status').innerText = "ဒေတာ ရယူ၍ မရနိုင်ပါ။";
+                    document.getElementById('w-status').innerText = "Failed to load weather data.";
                 });
         }
 
         function fetchLocationNameAndWeather(lat, lon) {
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&accept-language=my,en`)
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&accept-language=en`)
                 .then(res => res.json())
                 .then(data => {
-                    let cityName = data.address.city || data.address.town || data.address.village || data.address.state || "လက်ရှိ တည်နေရာ";
-                    loadWeather(lat, lon, `${cityName} ရာသီဥတု`);
+                    let cityName = data.address.city || data.address.town || data.address.village || data.address.state || "Current Location";
+                    loadWeather(lat, lon, `${cityName} Weather`);
                 })
                 .catch(() => {
-                    loadWeather(lat, lon, "လက်ရှိ တည်နေရာ ရာသီဥတု");
+                    loadWeather(lat, lon, "Current Location Weather");
                 });
         }
 
